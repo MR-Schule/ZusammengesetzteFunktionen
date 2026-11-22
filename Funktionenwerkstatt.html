@@ -1,0 +1,525 @@
+<!doctype html><html lang="de"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Funktionenwerkstatt | Mathewerkstatt</title><style>
+:root{--ink:#282137;--accent:#bd246f;--accent-dark:#971852;--canvas:#f4f4f0;--tint:#ffedf6;--line:#e8deea}*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font-family:system-ui,sans-serif}header{padding:23px 5%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:15px}header>span,.eyebrow{font-size:11px;letter-spacing:2px;font-weight:700}.brand{display:inline-flex;align-items:center;gap:11px;color:var(--ink);font-weight:800}.brand span{font-size:20px}.brand .brand-icon{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--accent);color:#fff;font-size:25px;line-height:1}main{max-width:1240px;margin:auto;padding:0 35px}.intro{padding:48px 0 35px;position:relative}.eyebrow{color:var(--accent)}h1{font-size:clamp(35px,5vw,60px);letter-spacing:-2.5px;line-height:1.07;margin:16px 0}p{line-height:1.65;color:#5e5268}.formula{position:absolute;right:2%;top:90px;background:var(--tint);transform:rotate(-4deg);padding:28px;border-radius:22px;font-size:27px;font-family:Georgia,serif}.layout{display:grid;grid-template-columns:260px 1fr;gap:26px}aside{padding:20px 0}aside h2{font-size:14px;margin:0 0 18px}nav{display:grid;gap:8px}button{font:inherit;cursor:pointer;border:1px solid var(--line);border-radius:10px;padding:12px 17px;background:white;color:var(--ink)}button:hover{background:var(--tint)}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--accent-dark);outline-offset:3px}nav button{text-align:left;background:transparent;border-color:transparent}nav button.active{background:var(--accent);color:white}.workspace{background:#fff;border:1px solid var(--line);border-radius:22px;padding:30px;min-height:485px;box-shadow:0 10px 32px #3d16450a}.topline{display:flex;justify-content:space-between;font-size:11px;letter-spacing:1.3px;color:#6a4b64}.workspace h2{font-size:27px;letter-spacing:-.7px;margin-bottom:4px}.progress{margin:25px 12px;font-size:14px}.progress small{display:block;font-size:11px;line-height:1.5}progress{width:100%;accent-color:var(--accent);height:7px;margin:12px 0}.text{border:0;background:transparent;padding:15px 0;font-size:12px;text-decoration:underline}.question{font-size:21px;margin:20px 0}.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px}.choices button{text-align:left}.fields{display:flex;gap:14px;flex-wrap:wrap}label{display:grid;gap:7px;font-size:14px}input[type=text]{width:100px;padding:12px;border:1px solid #9c8ba4;border-radius:8px;font:inherit}input[type=range]{width:100%;accent-color:var(--accent)}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.primary{background:var(--accent);color:white}.primary:hover,nav button.active:hover{background:var(--accent-dark)}.feedback{padding:14px;border-radius:10px;background:#edf2e8;margin-top:15px;line-height:1.6}.feedback.bad{background:#fff0e4}.graph{width:100%;max-height:340px;display:block;background:#fdfbfe;border:1px solid var(--line);border-radius:12px;margin:15px 0}.lab{display:grid;grid-template-columns:1fr 180px;gap:22px}.lab label{margin:13px 0}.equation{font-family:Georgia,serif;font-size:26px;margin:20px 0}.note{font-size:13px}footer{padding:30px 0;font-size:11px;color:#65576d} @media(max-width:760px){main{padding:0 18px}header>span,.formula{display:none}.intro{padding-top:30px}.layout{grid-template-columns:1fr;gap:10px}aside{padding:0}nav{display:flex;overflow-x:auto}nav button{white-space:nowrap}.progress{margin:12px}.progress small,.progress .text,aside h2{display:none}.workspace{padding:20px}.lab{grid-template-columns:1fr}.choices{grid-template-columns:1fr}h1{letter-spacing:-1.5px}}
+
+.blanks{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:20px 15px;background:#f8f5fa;border-radius:12px}.blanks input[type=text]{width:70px;font-family:system-ui,sans-serif;font-size:20px;text-align:center}.blanks select{font:inherit;font-size:22px;border:1px solid #9c8ba4;border-radius:8px;padding:9px;background:white;color:var(--ink)}select:focus-visible{outline:3px solid var(--accent-dark);outline-offset:3px}.mission{padding:18px;background:var(--tint);border-left:4px solid var(--accent);border-radius:10px;margin-top:20px}.mission p{margin-bottom:0;color:var(--ink)}
+
+.value-table{border-collapse:collapse;width:100%;margin:20px 0}.value-table th,.value-table td{padding:14px;text-align:center;border:1px solid #a9b9aa}.value-table th{background:#f8f5fa}.value-table input[type=text]{width:80px;text-align:center}.vertex{width:max-content;max-width:100%;gap:12px}.lab .graph{max-height:none;width:100%;aspect-ratio:4/3}.lab{grid-template-columns:minmax(0,1fr) 180px}@media(max-width:760px){.lab{grid-template-columns:1fr}.value-table th,.value-table td{padding:8px}.value-table input[type=text]{width:60px}}
+
+/* Responsive layout and touch controls. */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.layout{grid-template-columns:260px minmax(0,1fr)}
+.layout>*,.workspace,#content,.lab>*,aside,nav{min-width:0}
+.mobile-station{display:none}
+.equation-product,.equation-bracket,.equation-tail{display:inline-flex;align-items:center;gap:10px;flex:none}
+button,input,select{touch-action:manipulation}
+.slider-controls{display:flex;align-items:center;gap:10px;min-width:0}
+.slider-controls button{flex:0 0 44px;min-height:44px;padding:4px;font-size:23px}
+.slider-controls input{min-width:0;flex:1;height:44px;margin:0}
+.graph{height:auto}
+select,input[type=text]{font-size:16px}
+@media(max-width:1000px){
+ .layout{grid-template-columns:minmax(0,1fr)}
+ aside{padding:0}.mobile-station{display:block}
+ nav{display:none}.progress{margin:12px 0}.progress small,.progress .text,aside h2{display:none}
+ .progress progress{margin:6px 0}.formula{display:none}.intro{padding:24px 0 18px}
+ h1{font-size:40px;letter-spacing:-1.5px;margin:12px 0}.intro p{margin:10px 0}
+ .workspace{min-height:0}
+}
+@media(max-width:600px){
+ header{padding:14px 16px}header>span{display:none}main{padding:0 12px}
+ .brand span{font-size:18px}.intro .eyebrow{font-size:10px;letter-spacing:1px}
+ h1{font-size:32px;letter-spacing:-1px}.intro p{font-size:14px;line-height:1.5}
+ .layout{gap:8px}.workspace{padding:16px 12px;border-radius:16px}
+ .workspace h2{font-size:24px;line-height:1.2}.topline{font-size:10px;letter-spacing:.5px;gap:8px;flex-wrap:wrap}
+ .workspace p{font-size:15px;line-height:1.55}.question{font-size:18px;line-height:1.55;margin:16px 0}
+ .choices{grid-template-columns:minmax(0,1fr)}button{min-height:46px}
+ .choices button{white-space:normal;overflow-wrap:anywhere}
+ .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .actions button{font-size:14px;padding:10px 8px;white-space:normal}
+ .blanks{padding:12px 8px;gap:9px;font-size:22px;line-height:1.5}
+ .blanks .equation-name{flex-basis:100%}
+ .equation-product,.equation-bracket,.equation-tail{gap:5px}
+ .blanks input[type=text]{width:50px;min-width:0;min-height:46px;padding:7px 3px;font-size:18px}
+ .blanks select{width:46px;min-width:0;min-height:46px;padding:5px 1px;font-size:19px}
+ .vertex{gap:8px}.vertex input[type=text]{width:64px}
+ .value-table{table-layout:fixed;font-size:16px}.value-table th,.value-table td{padding:6px 3px}
+ .value-table input[type=text]{width:100%;min-width:0;min-height:46px;padding:7px 2px;font-size:17px}
+ .lab{grid-template-columns:minmax(0,1fr);gap:4px}.lab .equation{font-size:23px;margin:16px 0 8px}
+ .lab .graph{width:100%;max-height:none;aspect-ratio:4/3;margin:8px 0}
+ .graph text{font-size:20px}.graph text:last-child,.graph text:nth-last-child(2){font-size:22px}
+ .lab label{margin:8px 0;font-size:15px}.slider-controls{gap:12px}
+ .mission{padding:12px;margin-top:16px}.mission .eyebrow{font-size:10px;letter-spacing:.8px}
+ .feedback{font-size:15px;padding:12px;overflow-wrap:anywhere}
+ footer{padding:22px 0;font-size:11px;line-height:1.6}
+}
+
+
+:root{--marker-x:#ffe666;--marker-y:#a8ed9c;--marker-factor:#ffadd6}
+mark[data-coordinate]{color:inherit;padding:0 .16em;border-radius:.16em}
+[data-coordinate="x"]{--coordinate-color:var(--marker-x)}
+[data-coordinate="y"]{--coordinate-color:var(--marker-y)}
+[data-coordinate="factor"]{--coordinate-color:var(--marker-factor)}
+mark[data-coordinate], #content input[data-coordinate]{background:linear-gradient(transparent 24%,var(--coordinate-color) 24% 93%,transparent 93%)}
+#content input[data-coordinate]{background-color:#fff}
+
+.station-check{color:#20864a;margin-inline-start:.35em;font-size:1.22em;line-height:1;font-weight:800}
+nav button.active .station-check{color:#cbffd7}
+.station-hint:has(#station-hint:not(:empty)){margin-top:14px;padding:12px 14px;border-radius:10px;background:#eef7ef;color:#185c33}
+
+nav button[data-mode]{font-size:1.0625rem}
+#next-station{margin-top:10px;text-align:left}
+@media(max-width:1000px){
+ .mobile-station-label{display:block;margin-bottom:7px;font-size:.875rem;font-weight:650}
+ .mobile-station summary{position:relative;display:block;list-style:none;cursor:pointer;min-height:48px;padding:12px;padding-inline-end:38px;border:1px solid var(--line);border-radius:10px;background:white;font-size:1.0625rem}
+ .mobile-station summary::-webkit-details-marker{display:none}
+ .mobile-station summary::after{content:"";position:absolute;inset-inline-end:15px;top:50%;width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-70%) rotate(45deg);pointer-events:none}
+ #mobile-current{display:inline;font-weight:700}
+ #mobile-nav{display:grid;gap:4px;padding:6px 0}
+ #mobile-nav button{white-space:normal}
+}
+
+.formula{top:54px}
+.feedback:empty{display:none}
+.graph text{font:14px system-ui,sans-serif;fill:var(--ink)}
+.plot-hit{cursor:pointer}
+.plot-hit:focus{outline:none;stroke:var(--accent-dark);stroke-width:3}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.9rem}
+.legend span{border-bottom:3px solid var(--curve)}
+.choices button[aria-pressed=true]{border-color:var(--accent);background:var(--tint)}
+.progress .text{display:block}
+@media(max-width:1000px){.progress .text{padding:5px 0;min-height:0}}
+.fraction{display:inline-flex;vertical-align:middle;flex-direction:column;align-items:stretch;text-align:center;line-height:1.05;margin:.1em .08em;white-space:nowrap}
+.fraction>span{padding:.07em .18em}
+.fraction>span:first-child{border-bottom:1px solid currentColor}
+.excluded{display:inline-block;vertical-align:-.15em;white-space:nowrap}
+.asym-y{color:#984708}.asym-x{color:#ad195f}
+.choices button{text-align:left}
+.graph .curve-label{font-weight:750;font-size:17px;paint-order:stroke;stroke:#fdfbfe;stroke-width:4px;stroke-linejoin:round}
+</style><body><header><div class="brand"><span class="brand-icon" aria-hidden="true">π</span><span>Mathewerkstatt</span></div><span>LERNAPPS FÜR MATHEMATIK</span></header><main><section class="intro"><div class="eyebrow">ZUSAMMENGESETZTE FUNKTIONEN</div><h1>Funktionenwerkstatt</h1><p>Verknüpfe Funktionen und untersuche ihre Graphen.<br>Übe in deinem Tempo – mit Tipps und direkter Rückmeldung.</p><div class="formula">h(x) = f(g(x))</div></section><div class="layout"><aside><h2>Deine Werkstatt</h2><div class="mobile-station"><span class="mobile-station-label" id="mobile-station-label">Übungsbereich auswählen</span><details id="mobile-station"><summary aria-labelledby="mobile-station-label mobile-current"><span id="mobile-current"></span><span class="station-check" id="mobile-current-check" aria-hidden="true" hidden>✓</span></summary><nav id="mobile-nav" aria-label="Übungsbereiche"></nav></details></div><nav id="nav" aria-label="Übungsbereiche"></nav><div class="progress"><span id="score"></span><progress id="bar" max="18" aria-label="Fortschritt über alle Übungsstationen" value="0"></progress><small>Richtig gelöste Aufgaben · auf diesem Gerät</small><button class="text" id="reset">Fortschritt zurücksetzen</button></div></aside><section class="workspace"><div class="topline"><span id="tag"></span><span id="count"></span></div><h2 id="title" tabindex="-1"></h2><p id="desc"></p><div id="content"></div><div class="station-hint"><div id="station-hint" role="status"></div><button id="next-station" type="button" hidden></button></div></section></div><footer>Passend zum Arbeitsblatt „Zusammengesetzte Funktionen“ · Keine Namen, keine Anmeldung in der App. Fortschritt wird nur im Browser gespeichert.</footer></main><script>
+const $ = id => document.getElementById(id);
+const storageKey = 'funktionenwerkstatt-v2';
+const names = ['Funktionsterme bilden', 'Ordinaten addieren', 'Funktionen verketten',
+  'Definitionsmenge & Nullstellen', 'Asymptoten & Lücken', 'Symmetrie untersuchen'];
+const descriptions = [
+  'Addiere und multipliziere Funktionen.',
+  'Addiere die y-Werte an derselben x-Stelle und setze die Punkte des Summengraphen.',
+  'Bestimme innere und äußere Funktion und berechne Punkte des verketteten Graphen.',
+  'Prüfe zuerst, welche x-Werte erlaubt sind. Berechne dann die Nullstellen.',
+  'Untersuche das Verhalten an Definitionslücken und im Unendlichen.',
+  'Prüfe mit f(−x), welche Symmetrie beim Zusammensetzen entsteht.'
+];
+let saved;
+try {
+  saved = JSON.parse(localStorage.getItem(storageKey));
+  if (saved === null) {
+    const previous = JSON.parse(localStorage.getItem('funktionenwerkstatt-v1'));
+    if (Array.isArray(previous)) saved = previous.filter((_,i) => i !== 3);
+  }
+} catch {}
+let stats = names.map((_, i) => Number.isSafeInteger(saved?.[i]) && saved[i] >= 0 ? saved[i] : 0);
+const visits = names.map(() => 0);
+let mode = 0;
+let question, done, revealed, selected;
+const number = x => String(Number(x.toFixed(8))).replace('-', '−').replace('.', ',');
+const choice = (prompt, options, correct, tip, solution, graphic = '') =>
+  ({prompt, options, correct, tip, solution, graphic});
+const fields = (prompt, labels, answers, tip, solution, graphic = '', graphAt) =>
+  ({prompt, labels, answers, tip, solution, graphic, graphAt});
+
+const colors = ['#287441', '#be3550', '#7850a0', '#282137'];
+function plot(curves, config = {}) {
+  const {xl = -4, xr = 4, yl = -4, yr = 4, marks = [], asymptotes = [], graphAt, point, step = 1, label = 'Koordinatensystem'} = config;
+  const left = 36, right = 480, top = 14, bottom = 292;
+  const X = x => left + (x-xl)/(xr-xl)*(right-left);
+  const Y = y => bottom - (y-yl)/(yr-yl)*(bottom-top);
+  const axisX = X(0), axisY = Y(0);
+  let grid = '';
+  for (let x = Math.ceil(xl*2)/2; x <= xr; x += 0.5) {
+    if (!Number.isInteger(x)) grid += '<path d="M'+X(x)+' '+top+'V'+bottom+'" stroke="#eee8ef"/>';
+  }
+  for (let y = Math.ceil(yl*2)/2; y <= yr; y += 0.5) {
+    if (!Number.isInteger(y)) grid += '<path d="M'+left+' '+Y(y)+'H'+right+'" stroke="#eee8ef"/>';
+  }
+  if (graphAt !== undefined) grid += '<path d="M'+X(graphAt)+' '+top+'V'+bottom+'" stroke="#a67b96" stroke-dasharray="4 4"/>';
+  for (let x = Math.ceil(xl); x <= xr; x++) {
+    grid += '<path d="M'+X(x)+' '+top+'V'+bottom+'" stroke="#e3dbe5"/>';
+    if (x && x < xr) grid += '<text x="'+X(x)+'" y="'+(Math.min(bottom,axisY)+17)+'" text-anchor="middle">'+number(x)+'</text>';
+  }
+  for (let y = Math.ceil(yl/step)*step; y <= yr; y += step) {
+    grid += '<path d="M'+left+' '+Y(y)+'H'+right+'" stroke="#e3dbe5"/>';
+    if (y && y < yr) grid += '<text x="'+(axisX-6)+'" y="'+(Y(y)+4)+'" text-anchor="end">'+number(y)+'</text>';
+  }
+  const lines = curves.map(([name, fn, breaks = []], i) => {
+    let path = '', last = NaN;
+    for (let n = 0; n <= 1000; n++) {
+      const x = xl + (xr-xl)*n/1000, y = fn(x);
+      if (!Number.isFinite(y) || Math.abs(y)>10000) { last = NaN; continue; }
+      const move = !Number.isFinite(last) || breaks.some(b => last < b && x >= b);
+      path += (move?'M':'L') + X(x).toFixed(2)+' '+Y(y).toFixed(2);
+      last = x;
+    }
+    return '<path d="'+path+'" fill="none" stroke="'+colors[i]+'" stroke-width="2.6"/>';
+  }).join('');
+  const guides = asymptotes.map(([axis, value]) => axis === 'x'
+    ? '<path d="M'+X(value)+' '+top+'V'+bottom+'" stroke="#bd246f" stroke-width="2" stroke-dasharray="6 4"/>'
+    : '<path d="M'+left+' '+Y(value)+'H'+right+'" stroke="#a65c15" stroke-width="2" stroke-dasharray="6 4"/>').join('');
+  const dots = marks.map(([x,y,i]) => '<circle cx="'+X(x)+'" cy="'+Y(y)+'" r="4.5" fill="'+colors[i]+'"/>').join('');
+  let hits = '';
+  if (graphAt !== undefined) {
+    for (let y = Math.ceil(yl); y <= yr; y++) {
+      const chosen = point === y;
+      hits += '<circle class="plot-hit" data-y="'+y+'" tabindex="0" role="button" aria-label="Punkt bei x gleich '+number(graphAt)+' und y gleich '+number(y)+'" aria-pressed="'+chosen+'" cx="'+X(graphAt)+'" cy="'+Y(y)+'" r="8" fill="'+(chosen?'#bd246f':'#ffffffbd')+'" stroke="#a67b96"/>';
+    }
+  }
+  const placedLabels = [];
+  const labels = curves.map(([name, fn, breaks = []], i) => {
+    const candidates = [0.75,0.25,0.65,0.35,0.85,0.15,0.55,0.45].map(r => {
+      const x = xl+(xr-xl)*r;
+      return {x, y:fn(x)};
+    }).filter(({x,y}) => Number.isFinite(y) && Y(y)>top+15 && Y(y)<bottom-10 &&
+      breaks.every(at => Math.abs(x-at)>0.25));
+    const candidatesAwayFromLabels = candidates.filter(({x,y}) =>
+      placedLabels.every(p => Math.abs(X(x)-X(p.x))>32 || Math.abs(Y(y)-Y(p.y))>26));
+    const candidatesAwayFromCurves = candidatesAwayFromLabels.filter(({x,y}) =>
+      curves.every(([,other],j) => j===i || Math.abs(Y(y)-Y(other(x)))>19));
+    const p = candidatesAwayFromCurves[0] || candidatesAwayFromLabels[0] || candidates[0];
+    if (!p) return '';
+    placedLabels.push(p);
+    return '<text class="curve-label" x="'+(X(p.x)+5)+'" y="'+(Y(p.y)-6)+'" style="fill:'+colors[i]+'">'+name+'</text>';
+  }).join('');
+  return '<svg class="graph" viewBox="0 0 500 318" role="'+(hits?'group':'img')+'" aria-label="'+label+'">'+
+    '<defs><clipPath id="plot-clip"><rect x="'+left+'" y="'+top+'" width="'+(right-left)+'" height="'+(bottom-top)+'"/></clipPath></defs>'+grid+
+    '<path d="M'+left+' '+axisY+'H'+right+'m-7 -4 7 4 -7 4 M'+axisX+' '+bottom+'V'+top+'m-4 7 4 -7 4 7" fill="none" stroke="#282137" stroke-width="1.5"/>'+
+    '<g clip-path="url(#plot-clip)">'+guides+lines+dots+'</g>'+
+    '<text x="483" y="'+(axisY+15)+'">x</text><text x="'+(axisX+8)+'" y="15">y</text>'+hits+labels+'</svg>';
+}
+
+const frac = (top,bottom) => `<span class="fraction"><span>${top}</span><span>${bottom}</span></span>`;
+const radical = '<math><msqrt><mi>x</mi><mo>+</mo><mn>1</mn></msqrt></math>';
+const without = (...values) => `ℝ <span class="excluded">&#92; {${values.join('; ')}}</span>`;
+const asym = (axis, value) => `<span class="asym-${axis}">${axis} = ${value} <i>(${axis==='y'?'waagrechte':'senkrechte'} Asymptote)</i></span>`;
+
+function termTasks() {
+  const additionA = '(2x + 3) + (x − 1) = ';
+  const additionB = '(x² + 2x) + (3x² + x) = ';
+  return [
+    choice('Gegeben sind u(x) = x² − 4 und v(x) = x + 3.<br>Welcher Term stellt u(x) · v(x) dar?',
+      ['(x² + 4) · (x + 3)','x² − 4x + 3','(x² − 4) · (x + 3)','(x² − 4) + (x + 3)'],2,
+      'Jeder Funktionsterm bildet einen eigenen Faktor. Lass die Klammern stehen.',
+      'u(x) · v(x) = (x² − 4) · (x + 3).'),
+    choice('Gegeben sind u(x) = 2x + 3 und v(x) = x − 1.<br>Welche Rechnung für u(x) + v(x) ist richtig?',
+      ['3x + 2','3x + 4','x + 2','2x² + 2'].map(result => additionA + result),0,
+      'Fasse die x-Terme und die konstanten Summanden jeweils zusammen.',
+      'u(x) + v(x) = '+additionA+'3x + 2.'),
+    choice('Gegeben sind u(x) = cos(x) und v(x) = x − 4.<br>Welcher Term stellt u(x) · v(x) dar?',
+      ['cos(x − 4)','cos(x) + (x − 4)','cos(x) · x − 4','cos(x) · (x − 4)'],3,
+      'Schreibe die beiden Funktionsterme als Faktoren nebeneinander.',
+      'u(x) · v(x) = cos(x) · (x − 4).'),
+    choice('Gegeben sind u(x) = x² + 2x und v(x) = 3x² + x.<br>Welche Rechnung für u(x) + v(x) ist richtig?',
+      ['4x² + 2x','4x² + 3x','3x² + 3x','7x²'].map(result => additionB + result),1,
+      'Fasse die Terme mit x² und die Terme mit x jeweils zusammen.',
+      'u(x) + v(x) = '+additionB+'4x² + 3x.')
+  ];
+}
+
+function ordinateTask(i) {
+  const variants = [
+    [x=>x+2,x=>1-x,-1],
+    [x=>x*x-1,x=>x+1,0],
+    [x=>2-x,x=>x-3,1],
+    [x=>x*x-2,x=>2-x,-1],
+    [x=>x+1,x=>x*x-2,1],
+    [x=>x-1,x=>x*x-3,2]
+  ];
+  const [u,v,x] = variants[i%variants.length];
+  const y = u(x)+v(x);
+  const graphic = (point, show) => plot([
+    ['u',u], ['v',v], ...(show ? [['f',t=>u(t)+v(t)]] : [])
+  ], {graphAt:x, point, marks:[[x,u(x),0],[x,v(x),1]], label:'Graphen von u und v mit markierten Werten bei x = '+number(x)});
+  return fields('Setze bei x = '+number(x)+' den Punkt des Summengraphen f = u + v.',
+    ['y-Koordinate des Summenpunkts'],[y],
+    'Lies beide y-Werte bei x = '+number(x)+' ab und addiere sie. Du kannst den Punkt anklicken oder den y-Wert eintippen.',
+    'u('+number(x)+') = '+number(u(x))+' und v('+number(x)+') = '+number(v(x))+'. Daher f('+number(x)+') = '+number(u(x))+' + ('+number(v(x))+') = '+number(y)+'. Der Summenpunkt ist P('+number(x)+' | '+number(y)+').',
+    graphic,x);
+}
+
+function chainTasks() {
+  const f = x => x+1, g = x => x*x-1;
+  const base = 'Gegeben sind f(x) = x + 1 und g(x) = x² − 1.<br>';
+  function pointTask(x, reverse) {
+    const [inner, outer] = reverse ? ['f','g'] : ['g','f'];
+    const middle = (reverse ? f : g)(x);
+    const y = (reverse ? g : f)(middle);
+    const rule = 'h(x) = '+outer+'('+inner+'(x))';
+    const graphic = (_,show) => plot([['f',f],['g',g], ...(show ? [['h',t=>reverse?g(f(t)):f(g(t))]] : [])],
+      {xl:-3,xr:4,yl:-3,yr:7,marks:show?[[x,y,2]]:[],label:'Graphen von f und g'+(show?' und ihrer Verkettung h':'')});
+    return fields(base+'Berechne für '+rule+' den Zwischenwert und den Funktionswert bei x = '+number(x)+'.',
+      [inner+'('+number(x)+')','h('+number(x)+')'],[middle,y],
+      'Beginne mit '+inner+'('+number(x)+'). Setze das Ergebnis anschließend in '+outer+' ein.',
+      inner+'('+number(x)+') = '+number(middle)+'. Dann gilt '+outer+'('+number(middle)+') = '+number(y)+', also P('+number(x)+' | '+number(y)+').',graphic);
+  }
+  return [
+    pointTask(-2,false), pointTask(1,true), pointTask(0,false), pointTask(-1,true),
+    choice('Es gilt h(x) = f(g(x)) = (2x + 3)³ und f(x) = x³. Bestimme g(x).',
+      ['x³','2x + 3','2x³ + 3','(x + 3)³'],1,'Welcher Term wird als Ganzes hoch drei genommen?',
+      'g(x) = 2x + 3. In f(x) = x³ eingesetzt ergibt das f(g(x)) = (2x + 3)³.'),
+    choice(`f(x) = ${frac('3','x')} und g(x) = x + 4. Wie lautet h(x) = f(g(x))?`,
+      [frac('3','x + 4'),frac('3','x')+' + 4',frac('x + 4','3'),frac('3','4x')],0,
+      'Setze den gesamten inneren Term in den Nenner ein.',
+      `h(x) = ${frac('3','x + 4')}. Definiert für x ≠ −4.`)
+  ];
+}
+
+function zeroTasks() {
+  const rational = `f(x) = ${frac('x − 4','x + 2')}`;
+  const root = `f(x) = ${radical} · (x − 3)`;
+  const product = 'f(x) = (x² − 9) · (x + 2)';
+  return [
+    choice('Bestimme die maximale Definitionsmenge von '+rational+'.',
+      ['D = ℝ','D = '+without('4'),'D = '+without('−2'),'D = '+without('−2', '4')],2,
+      'Für welches x wird der Nenner null?','x + 2 = 0 gilt für x = −2. Daher D = '+without('−2')+'.'),
+    fields('Bestimme die Nullstelle von '+rational+'.',['Nullstelle'],[4],
+      'Setze den Zähler gleich null und prüfe den Nenner.','x − 4 = 0 ergibt x = 4. Dort ist der Nenner 6.'),
+    choice('Bestimme die maximale Definitionsmenge von '+root+'.',
+      ['D = [−1; +∞[','D = ]−1; +∞[','D = [0; +∞[','D = ℝ'],0,
+      'Der Term unter der Wurzel muss größer oder gleich null sein.','x + 1 ≥ 0 gilt für x ≥ −1. Also D = [−1; +∞[.'),
+    fields('Bestimme die Nullstellen von '+root+'.',
+      ['Kleinere Nullstelle','Größere Nullstelle'],[-1,3],
+      'Setze die beiden Faktoren einzeln gleich null.',`${radical} = 0 ergibt x = −1 und x − 3 = 0 ergibt x = 3. Beide liegen in D.`),
+    fields('Bestimme die Nullstellen von '+product+'.',
+      ['Kleinste Nullstelle','Mittlere Nullstelle','Größte Nullstelle'],[-3,-2,3],
+      'Aus x² = 9 folgen zwei Lösungen. Prüfe auch den linearen Faktor.',
+      'x² − 9 = 0 ergibt x = −3 oder x = 3. Aus x + 2 = 0 folgt x = −2.')
+  ];
+}
+
+function asymptoteTasks() {
+  const both = (x,y) => asym('x',x)+' und '+asym('y',y);
+  const withPlot = (prompt, options, correct, tip, solution, curve, x, y) =>
+    choice(prompt, options, correct, tip, solution, (_,show) =>
+      plot([['f',curve,[x]]],{xl:-5,xr:5,asymptotes:show?[['x',x],...(y===undefined?[]:[['y',y]])]:[],label:'Graph von f'+(show?' mit Asymptoten':'')}));
+  return [
+    withPlot(`Welche Asymptoten hat f(x) = ${frac('2','x − 1')} + 2?`,
+      [both('1','2'),both('2','1'),both('−1','2'),both('1','0')],0,
+      'Prüfe, wo der Nenner null wird und welchem Wert sich f für große Beträge von x nähert.',
+      'Bei x = 1 wächst der Betrag unbegrenzt. Für |x| → ∞ geht der Bruch gegen 0. Es ergeben sich '+both('1','2')+'.',x=>2/(x-1)+2,1,2),
+    withPlot(`Welche Asymptoten hat f(x) = ${frac('sin(x)','x + 1')} − 1?`,
+      [both('1','−1'),both('−1','0'),both('−1','−1'),asym('y','−1')],2,
+      'Der Zähler bleibt zwischen −1 und 1. Prüfe seinen Wert an der Definitionslücke.',
+      'sin(−1) ist von null verschieden. Für |x| → ∞ geht der Bruch gegen 0. Es ergeben sich '+both('−1','−1')+'.',x=>Math.sin(x)/(x+1)-1,-1,-1),
+    withPlot(`Welche der angegebenen Asymptoten hat f(x) = sin(x) + ${frac('1','x − 2')}?`,
+      ['Nur '+asym('y','0'),both('2','0'),'Nur '+asym('x','2'),'Keine'],2,
+      'Betrachte den Nenner. Schwingt der Sinus auch für sehr große x weiter?',
+      'Bei x = 2 wächst der Betrag unbegrenzt. Im Unendlichen schwingt der Sinus weiter. Es gibt hier nur '+asym('x','2')+'.',x=>Math.sin(x)+1/(x-2),2),
+    choice(`Wie verhält sich f(x) = sin(${frac('1','x + 2')}) nahe x = −2?`,
+      ['f ist bei x = −2 definiert.','f nähert sich an der Lücke der 0.','Es gibt '+asym('x','−2')+'.','f schwingt an der Lücke zwischen −1 und 1.'],3,
+      'Welche Werte kann der Sinus annehmen, wenn der Betrag seines Arguments immer größer wird?',
+      'D = '+without('−2')+'. Der Sinus schwingt an der Lücke beliebig schnell und bleibt beschränkt. Dort gibt es keine senkrechte Asymptote.')
+  ];
+}
+
+function symmetryTasks() {
+  const options = ['Achsensymmetrisch zur y-Achse','Punktsymmetrisch zum Ursprung','Keine der beiden Symmetrien'];
+  const products = [
+    choice('Welche Symmetrie hat f(x) = (x² + 3) · sin(x)?',options,1,
+      'Der erste Faktor ist gerade, der zweite ungerade.',
+      'f(−x) = (x² + 3) · (−sin(x)) = −f(x). Der Graph ist punktsymmetrisch zum Ursprung.'),
+    choice('Welche Symmetrie hat f(x) = (x³ − 2x) · x?',options,0,
+      'Beide Faktoren wechseln beim Einsetzen von −x das Vorzeichen.',
+      'f(−x) = (−x³ + 2x) · (−x) = (x³ − 2x) · x = f(x). Der Graph ist achsensymmetrisch zur y-Achse.'),
+    choice('Welche Symmetrie hat f(x) = (x² + 1) · cos(x)?',options,0,
+      'Prüfe beide Faktoren beim Einsetzen von −x.',
+      'f(−x) = (x² + 1) · cos(x) = f(x), weil beide Faktoren gerade sind.'),
+    choice('Welche Symmetrie hat f(x) = (x + 2) · (x² + 1)?',options,2,
+      'Vergleiche f(−1) mit f(1) und −f(1).',
+      'f(−1) = 2 und f(1) = 6. Damit scheiden beide Symmetrien aus.')
+  ];
+  const sums = [
+    choice(`Welche Symmetrie hat f(x) = x² + ${frac('3','x')}?`,options,2,
+      'Berechne f(−1) und f(1) und vergleiche beide Werte.',
+      'f(−1) = −2 und f(1) = 4. Die Werte sind weder gleich noch Gegenzahlen.'),
+    choice('Welche Symmetrie hat f(x) = x³ + sin(x)?',options,1,
+      'Beide Summanden ändern beim Einsetzen von −x ihr Vorzeichen.',
+      'f(−x) = −x³ − sin(x) = −f(x). Der Graph ist punktsymmetrisch zum Ursprung.'),
+    choice('Welche Symmetrie hat f(x) = x² + cos(x)?',options,0,
+      'Prüfe, wie sich beide Summanden beim Einsetzen von −x verhalten.',
+      'f(−x) = x² + cos(x) = f(x). Der Graph ist achsensymmetrisch zur y-Achse.')
+  ];
+  return index => {
+    const sumIndex = Math.floor(index/3);
+    if (index%3 === 1) return sums[sumIndex%sums.length];
+    const productIndex = index - Math.floor((index+1)/3);
+    return products[productIndex%products.length];
+  };
+}
+
+const tasks = [
+  termTasks(), ordinateTask, chainTasks(), zeroTasks(), asymptoteTasks(), symmetryTasks()
+];
+const required = names.map((_, i) => i >= 3 ? 4 : 2);
+
+function switchMode(i) {
+  mode = i;
+  $('mobile-current').textContent = stationNumber(i)+' '+names[i];
+  $('mobile-current-check').hidden = stats[i] < required[i];
+  $('mobile-station').open = false;
+  for (const button of document.querySelectorAll('[data-mode]')) {
+    const active = Number(button.dataset.mode) === i;
+    button.classList.toggle('active', active);
+    if (active) button.setAttribute('aria-current','step');
+    else button.removeAttribute('aria-current');
+  }
+  $('tag').textContent = 'ÜBUNGSSTATION '+stationNumber(i);
+  $('title').textContent = names[i];
+  $('desc').textContent = descriptions[i];
+  next();
+  updateStationHint();
+}
+
+function feedback(message, bad = false) {
+  $('feedback').className = 'feedback'+(bad?' bad':'');
+  $('feedback').innerHTML = message;
+}
+
+function next() {
+  const index = visits[mode]++;
+  const source = tasks[mode];
+  question = Array.isArray(source) ? source[index%source.length] : source(index);
+  done = revealed = false;
+  selected = undefined;
+  let selectedChoice;
+  const useCheckButton = Boolean(question.answers) || mode !== 2;
+  $('count').textContent = stats[mode]+' gelöst';
+  const inputs = question.answers
+    ? '<div class="fields">'+question.labels.map((label,i) => '<label>'+label+'<input id="v'+i+'" type="text" inputmode="decimal" autocomplete="off"></label>').join('')+'</div>'
+    : '<div class="choices">'+question.options.map((option,i) => '<button type="button" data-choice="'+i+'" aria-pressed="false">'+option+'</button>').join('')+'</div>';
+  $('content').innerHTML = '<div class="question">'+question.prompt+'</div><div id="graphic"></div>'+inputs+
+    '<div class="actions">'+(useCheckButton?'<button type="button" class="primary" id="check">Prüfe</button>':'')+
+    '<button id="hint">Tipp</button><button id="solution">Lösung zeigen</button><button id="next">Neue Übungsaufgabe →</button></div>'+
+    '<div id="feedback" role="status" aria-live="polite"></div>';
+  draw();
+  if (useCheckButton) {
+    $('check').onclick = () => {
+      if (!question.answers && selectedChoice === undefined) {
+        feedback('Wähle zuerst eine Antwort aus.',true);
+        return;
+      }
+      check(selectedChoice);
+    };
+  }
+  if (question.answers) {
+    question.answers.forEach((_,i) => {
+      $('v'+i).addEventListener('keydown', e => { if(e.key === 'Enter') check(); });
+    });
+    if (question.graphAt !== undefined) $('v0').addEventListener('input', () => selectPoint(readNumber($('v0').value)));
+  }
+  document.querySelectorAll('[data-choice]').forEach(button => {
+    button.onclick = () => {
+      if (done) return;
+      document.querySelectorAll('[data-choice]').forEach(b => b.setAttribute('aria-pressed',b===button));
+      selectedChoice = Number(button.dataset.choice);
+      if (!useCheckButton) check(selectedChoice);
+    };
+  });
+  $('hint').onclick = () => feedback(question.tip);
+  $('solution').onclick = () => {
+    if (!done) revealed = true;
+    feedback(question.solution);
+    draw();
+  };
+  $('next').onclick = () => { next(); $('title').focus(); };
+}
+
+function selectPoint(y) {
+  selected = y;
+  document.querySelectorAll('[data-y]').forEach(dot => {
+    const active = Number(dot.dataset.y) === selected;
+    dot.setAttribute('aria-pressed',active);
+    dot.setAttribute('fill',active?'#bd246f':'#ffffffbd');
+  });
+}
+
+function draw() {
+  const show = done || revealed;
+  $('graphic').innerHTML = typeof question.graphic === 'function'
+    ? question.graphic(selected,show) : question.graphic;
+  document.querySelectorAll('[data-y]').forEach(dot => {
+    const choose = () => {
+      if (done) return;
+      const y = Number(dot.dataset.y);
+      $('v0').value = number(y);
+      selectPoint(y);
+    };
+    dot.onclick = choose;
+    dot.onkeydown = event => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); choose(); }
+    };
+  });
+}
+
+function readNumber(raw) {
+  const text = raw.trim().replace(/−/g,'-').replace(',','.');
+  return /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(text) ? Number(text) : NaN;
+}
+function check(option) {
+  if (done) return;
+  let correct = option === question.correct;
+  if (question.answers) {
+    const values = question.answers.map((_,i) => readNumber($('v'+i).value));
+    if (values.some(v => !Number.isFinite(v))) {
+      feedback('Trage in jedes Feld eine Zahl ein. Dezimalkomma ist möglich.',true);
+      return;
+    }
+    correct = values.every((v,i) => Math.abs(v-question.answers[i]) < 1e-8);
+  }
+  if (!correct) {
+    feedback('Noch nicht ganz. '+question.tip,true);
+    return;
+  }
+  done = true;
+  if (!revealed) stats[mode]++;
+  score();
+  $('count').textContent = stats[mode]+' gelöst';
+  feedback((revealed?'Jetzt stimmt es! ':'Richtig! ')+question.solution);
+  draw();
+}
+function updateStationHint(){
+ const hint=$('station-hint');
+ const message=stats[mode]<required[mode]?'':mode<names.length-1
+  ?'Du hast hier mindestens '+required[mode]+' Aufgaben gelöst. Du kannst zur nächsten Übungsstation wechseln.'
+  :'Du hast auch in dieser Station mindestens '+required[mode]+' Aufgaben gelöst.';
+ if(hint.textContent!==message)hint.textContent=message;
+ const nextStation=$('next-station');
+ nextStation.hidden=stats[mode]<required[mode]||mode>=names.length-1;
+ nextStation.textContent=nextStation.hidden?'':'Weiter zu '+names[mode+1];
+}
+function score(){
+ const total=stats.reduce((sum,count)=>sum+count,0);
+ $('score').textContent=total+' Aufgaben gemeistert';
+ $('bar').value=stats.reduce((sum,count,i)=>sum+Math.min(count,required[i]),0);
+ for(const button of document.querySelectorAll('[data-mode]')){
+  const i=Number(button.dataset.mode);
+  const complete=stats[i]>=required[i];
+  button.querySelector('.station-check').hidden=!complete;
+  if(complete)button.setAttribute('aria-label',stationNumber(i)+' '+names[i]+' – mindestens '+required[i]+' Aufgaben gelöst');
+  else button.removeAttribute('aria-label');
+ }
+ $('mobile-current-check').hidden=stats[mode]<required[mode];
+ updateStationHint();
+ try{localStorage.setItem(storageKey,JSON.stringify(stats))}catch{}
+}
+const stationNumber = i => String(i+1).padStart(2,'0');
+const stationButtons=names.map((name,i)=>`<button type="button" data-mode="${i}"><span>${stationNumber(i)}</span>&ensp;${name}<span class="station-check" aria-hidden="true" hidden>✓</span></button>`).join('');
+$('nav').innerHTML=stationButtons;
+$('mobile-nav').innerHTML=stationButtons;
+document.querySelectorAll('[data-mode]').forEach(button=>button.onclick=()=>{
+ switchMode(Number(button.dataset.mode));
+ if(button.closest('#mobile-nav'))$('title').focus();
+});
+$('next-station').onclick=()=>{
+ switchMode(mode+1);
+ $('title').focus();
+};
+$('reset').onclick=()=>{if(confirm('Gespeicherten Fortschritt zurücksetzen?')){stats=names.map(()=>0);score();switchMode(mode)}};score();switchMode(0);
+
+</script></body></html>
